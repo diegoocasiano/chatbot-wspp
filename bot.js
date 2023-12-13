@@ -1,8 +1,10 @@
 const { Client } = require('whatsapp-web.js');
+const { MessageMedia } = require('whatsapp-web.js');
+
 const express = require('express');
 const QRCode = require('qrcode');
 const axios = require('axios');
-
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -78,6 +80,41 @@ client.on('message', async (message) => {
     }
 
 });
+
+client.on('message', async (message) => {
+    let ytLink = '';
+
+    if(message.body.startsWith('mp3')){
+        const youtubeLink = message.body.slice('mp3'.length).trim();
+        ytLink = youtubeLink;
+        
+        try {
+            await client.sendMessage(message.from, 'Descargando...');
+
+            const response = await axios.post('http://localhost:5000/download-mp3', { link: ytLink});
+            console.log(response.data);
+
+            const fileName = response.data.file_name;
+            
+            await client.sendMessage(message.from, 'Listo! Enviando canción... 🔥 ');
+
+            const media = MessageMedia.fromFilePath(fileName);
+            media.mimetype = 'application/octet-stream';
+            media.filename = fileName;
+            await client.sendMessage(message.from, media, { caption: 'Disfrútalo ⚡' });
+
+            ytLink = '';
+            
+            // Elimina el archivo .mp3 después de enviarlo
+            fs.unlinkSync(fileName);
+            console.log(`Archivo eliminado: ${fileName}`);
+
+        } catch (error) {
+            console.error('Error al descargar el archivo:', error);
+            await client.sendMessage(message.from, 'Ups! Algo salió mal al descargar el audio.');
+        }
+    }
+})
 
 // Inicializar el cliente de WhatsApp
 client.initialize();
