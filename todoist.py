@@ -21,4 +21,4 @@ def add_idea():
         return jsonify({"error": "Error adding task to Todoist"}), 500
 
 if __name__ == '__main__': 
-    app.run(debug=True)   
+    app.run(debug=False, port=5000)   
