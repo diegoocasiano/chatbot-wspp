@@ -48,7 +48,7 @@ def download():
         return jsonify({"error": "Error al descargar el audio"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5001)
+    app.run(debug=True, port=5001)
 
 
 
