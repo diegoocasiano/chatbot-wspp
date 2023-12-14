@@ -89,6 +89,7 @@ client.on('message', async (message) => {
         ytLink = youtubeLink;
         
         try {
+            console.log('Iniciando descarga...');
             await client.sendMessage(message.from, 'Descargando...');
 
             const response = await axios.post('http://localhost:5001/download-mp3', { link: ytLink});
@@ -96,11 +97,15 @@ client.on('message', async (message) => {
 
             const fileName = response.data.file_name;
             
+            console.log('Enviando canción...');
             await client.sendMessage(message.from, 'Listo! Enviando canción... 🔥 ');
 
             const media = MessageMedia.fromFilePath(fileName);
             media.mimetype = 'application/octet-stream';
             media.filename = fileName;
+            console.log(fileName)
+
+            console.log('Enviando archivo...');
             await client.sendMessage(message.from, media, { caption: 'Disfrútalo ⚡' });
 
             ytLink = '';
