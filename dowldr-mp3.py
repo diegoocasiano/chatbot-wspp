@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from pytube import YouTube
-import yt_dlp
 import ffmpeg
 
 app = Flask(__name__)
@@ -13,11 +12,12 @@ def download():
 
         # Obtengo el titulo del video con yt_dlp
         def get_video_title(yt_link):
-            with yt_dlp.YoutubeDL() as ydl:
-                info = ydl.extract_info(yt_link, download=False)
-                return info.get('title', None)
+            yt = YouTube(yt_link)
+            return yt.title
+        
 
         video_title = get_video_title(yt_link)
+        print(f"Descargando audio de: {video_title}")
         
         # Descargar el audio desde YouTube con pytube
         yt = YouTube(yt_link)
