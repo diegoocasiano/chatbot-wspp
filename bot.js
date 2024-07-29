@@ -5,97 +5,102 @@ const axios = require('axios');
 const fs = require('fs');
 const puppeteer = require('puppeteer-core');
 
-const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: '/usr/bin/google-chrome', // Asegúrate de que esta ruta sea correcta
-});
-
-
 const app = express();
 const port = 3000;
 
-// Configurar el cliente de WhatsApp
-const client = new Client({ puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
+// Función principal asincrónica para inicializar el navegador
+async function initialize() {
+    // Lanzar el navegador
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: '/usr/bin/google-chrome', // Asegúrate de que esta ruta sea correcta
+    });
 
-client.on('qr', (qr) => {
-    generateQR(qr);
-});
+    // Configurar el cliente de WhatsApp
+    const client = new Client({ puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
-async function generateQR(qrCode) {
-    try {
-        const filePath = 'qrcode.png';
-        await QRCode.toFile(filePath, qrCode);
-        console.log('Código QR generado y guardado como qrcode.png');
-    } catch (error) {
-        console.error('Error al generar el código QR:', error);
-    }
-}
+    client.on('qr', (qr) => {
+        generateQR(qr);
+    });
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-app.use(express.static(__dirname));
-
-app.listen(port, () => {
-    console.log(`Servidor web iniciado en http://localhost:${port}`);
-});
-
-client.on('ready', () => {
-    console.log('Client is ready!');
-});
-
-client.on('message', async (message) => {
-    let storedIdea = '';
-    const lowerCaseMessage = message.body.toLowerCase();
-
-    if (lowerCaseMessage.startsWith('idea')) {
-        const content = lowerCaseMessage.slice('idea'.length).trim();
-        storedIdea = content;
-
+    async function generateQR(qrCode) {
         try {
-            const response = await axios.post('http://localhost:5000/add-idea', { idea: storedIdea });
-            console.log(response.data);
-
-            storedIdea = '';
-
-            await client.sendMessage(message.from, 'Idea asegurada! 🚀');
+            const filePath = 'qrcode.png';
+            await QRCode.toFile(filePath, qrCode);
+            console.log('Código QR generado y guardado como qrcode.png');
         } catch (error) {
-            console.error('Error al agregar la idea:', error);
+            console.error('Error al generar el código QR:', error);
+        }
+    }
 
-            if (error.response && error.response.data && error.response.data.error) {
-                await client.sendMessage(message.from, 'Hey! Envié la idea a Todoist, pero algo pasó y no se logró guardar');
-            } else {
-                await client.sendMessage(message.from, 'Ups! Me pasó algo y no pude guardar la idea.');
+    app.get('/', (req, res) => {
+        res.sendFile(__dirname + '/index.html');
+    });
+
+    app.use(express.static(__dirname));
+
+    app.listen(port, () => {
+        console.log(`Servidor web iniciado en http://localhost:${port}`);
+    });
+
+    client.on('ready', () => {
+        console.log('Client is ready!');
+    });
+
+    client.on('message', async (message) => {
+        let storedIdea = '';
+        const lowerCaseMessage = message.body.toLowerCase();
+
+        if (lowerCaseMessage.startsWith('idea')) {
+            const content = lowerCaseMessage.slice('idea'.length).trim();
+            storedIdea = content;
+
+            try {
+                const response = await axios.post('http://localhost:5000/add-idea', { idea: storedIdea });
+                console.log(response.data);
+
+                storedIdea = '';
+
+                await client.sendMessage(message.from, 'Idea asegurada! 🚀');
+            } catch (error) {
+                console.error('Error al agregar la idea:', error);
+
+                if (error.response && error.response.data && error.response.data.error) {
+                    await client.sendMessage(message.from, 'Hey! Envié la idea a Todoist, pero algo pasó y no se logró guardar');
+                } else {
+                    await client.sendMessage(message.from, 'Ups! Me pasó algo y no pude guardar la idea.');
+                }
             }
         }
-    }
 
-    if (message.body.startsWith('mp3')) {
-        const youtubeLink = message.body.slice('mp3'.length).trim();
-        try {
-            await client.sendMessage(message.from, 'Descargando...');
+        if (message.body.startsWith('mp3')) {
+            const youtubeLink = message.body.slice('mp3'.length).trim();
+            try {
+                await client.sendMessage(message.from, 'Descargando...');
 
-            const response = await axios.post('http://localhost:5001/download-mp3', { link: youtubeLink });
-            console.log(response.data);
+                const response = await axios.post('http://localhost:5001/download-mp3', { link: youtubeLink });
+                console.log(response.data);
 
-            const fileName = response.data.file_name;
+                const fileName = response.data.file_name;
 
-            await client.sendMessage(message.from, 'Listo! Enviando canción... 🔥 ');
+                await client.sendMessage(message.from, 'Listo! Enviando canción... 🔥 ');
 
-            const media = MessageMedia.fromFilePath(fileName);
-            media.mimetype = 'application/octet-stream';
-            media.filename = fileName;
-            await client.sendMessage(message.from, media, { caption: 'Disfrútalo ⚡' });
+                const media = MessageMedia.fromFilePath(fileName);
+                media.mimetype = 'application/octet-stream';
+                media.filename = fileName;
+                await client.sendMessage(message.from, media, { caption: 'Disfrútalo ⚡' });
 
-            fs.unlinkSync(fileName);
-            console.log(`Archivo eliminado: ${fileName}`);
-        } catch (error) {
-            console.error('Error al descargar el archivo:', error);
-            await client.sendMessage(message.from, 'Ups! Algo salió mal al descargar el audio.');
+                fs.unlinkSync(fileName);
+                console.log(`Archivo eliminado: ${fileName}`);
+            } catch (error) {
+                console.error('Error al descargar el archivo:', error);
+                await client.sendMessage(message.from, 'Ups! Algo salió mal al descargar el audio.');
+            }
         }
-    }
+    });
 
-});
+    client.initialize();
+}
 
-client.initialize();
+// Llamar a la función principal asincrónica
+initialize().catch(console.error);
