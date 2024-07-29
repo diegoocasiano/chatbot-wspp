@@ -39,11 +39,9 @@ async function initialize() {
 
     app.use(express.static(__dirname));
 
-    // Cambiar a 0.0.0.0 para escuchar en todas las interfaces
-    app.listen(port, '0.0.0.0', () => {
-        console.log(`Servidor web iniciado en http://0.0.0.0:${port}`);
+    app.listen(port, () => {
+        console.log(`Servidor web iniciado en http://localhost:${port}`);
     });
-
 
     client.on('ready', () => {
         console.log('Client is ready!');
