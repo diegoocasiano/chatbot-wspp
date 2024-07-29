@@ -46,7 +46,6 @@ client.on('ready', () => {
     console.log('Client is ready!');
 });
 
-
 client.on('message', async (message) => {
 
     let storedIdea = ''
@@ -118,6 +117,4 @@ client.on('message', async (message) => {
 
 // Inicializar el cliente de WhatsApp
 client.initialize();
-
-
 
