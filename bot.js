@@ -3,13 +3,19 @@ const express = require('express');
 const QRCode = require('qrcode');
 const axios = require('axios');
 const fs = require('fs');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+
+const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: '/usr/bin/google-chrome', // Asegúrate de que esta ruta sea correcta
+});
+
 
 const app = express();
 const port = 3000;
 
 // Configurar el cliente de WhatsApp
-const client = new Client();
+const client = new Client({ puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
 client.on('qr', (qr) => {
     generateQR(qr);
@@ -90,25 +96,6 @@ client.on('message', async (message) => {
         }
     }
 
-    // Ejemplo de uso de Puppeteer
-    if (message.body.startsWith('puppeteer')) {
-        try {
-            const browser = await puppeteer.launch({
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                headless: true
-            });
-
-            const page = await browser.newPage();
-            await page.goto('http://example.com');
-            console.log(await page.title());
-
-            await browser.close();
-            await client.sendMessage(message.from, 'Operación de Puppeteer completada.');
-        } catch (error) {
-            console.error('Error con Puppeteer:', error);
-            await client.sendMessage(message.from, 'Ups! Algo salió mal con Puppeteer.');
-        }
-    }
 });
 
 client.initialize();
