@@ -78,7 +78,7 @@ async function initialize() {
             try {
                 await client.sendMessage(message.from, 'Descargando...');
 
-                const response = await axios.post('http://localhost:5001/download-mp3', { link: youtubeLink });
+                const response = await axios.post('http://54.198.67.49:5001/download-mp3', { link: youtubeLink });
                 console.log(response.data);
 
                 const fileName = response.data.file_name;
