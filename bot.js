@@ -40,7 +40,7 @@ async function initialize() {
     app.use(express.static(__dirname));
 
     app.listen(port, () => {
-        console.log(`Servidor web iniciado en http://localhost:${port}`);
+        console.log(`Servidor web iniciado en http://54.82.183.215:${port}`);
     });
 
     client.on('ready', () => {
@@ -56,7 +56,7 @@ async function initialize() {
             storedIdea = content;
 
             try {
-                const response = await axios.post('http://localhost:5000/add-idea', { idea: storedIdea });
+                const response = await axios.post('http://54.82.183.215:5000/add-idea', { idea: storedIdea });
                 console.log(response.data);
 
                 storedIdea = '';
@@ -78,7 +78,7 @@ async function initialize() {
             try {
                 await client.sendMessage(message.from, 'Descargando...');
 
-                const response = await axios.post('http://54.162.29.187:5001/download-mp3', { link: youtubeLink });
+                const response = await axios.post('http://54.82.183.215:5001/download-mp3', { link: youtubeLink });
                 console.log(response.data);
 
                 const fileName = response.data.file_name;
