@@ -7,13 +7,7 @@ const puppeteer = require('puppeteer-core');
 
 const app = express();
 const port = 3000;
-// Lista de chistes
-const chistes = [
-    '¿Qué es lo peor de comerse un reloj? Que consumes tiempo. ⏰',
-    '¿Qué le dijo una impresora a otra? "Esa hoja es tuya o es una impresión mía". 🤓',
-    '¿Por qué el libro de matemáticas se deprimió? Porque tenía demasiados problemas. 📚',
-    '¿Cómo se dice pañuelo en japonés? Saka-moko. 🤧'
-];
+
 
 // Función principal asincrónica para inicializar el navegador
 async function initialize() {
@@ -56,30 +50,15 @@ async function initialize() {
 
     client.on('message_create', message => {
         if (message.body === 'Hola', 'hola' , 'Hola!', 'hola!') {
-            client.sendMessage(message.from, 'Holaaa!😛. Soy un bot creado para descargar música de YouTube. 🎵 Si no sabes cómo, solo escribe "tutorial". Pero no seas tan chismoso 🤫, si alguien te pregunta, solo cuento chistes (para que YouTube no se enoje y demande a mi creador 🥵). Intenta escribiendo "cuentame un chiste". Y eso es todo, disfrútalo! 🚀');
+            client.sendMessage(message.from, 'Holaaa!😛. Soy un bot creado para descargar música de YouTube. Si no sabes cómo, solo escribe "tutorial". Pero no seas tan chismoso 🤫, si alguien te pregunta, solo cuento chistes (para que YouTube no se enoje y demande a mi creador 🥵). Eso es todo, disfrútalo! 🚀');
         }
     });
     client.on('message_create', message => {
-        if (message.body === 'tutorial') {
+        if (message.body === 'tutorial','Tutorial') {
             client.sendMessage(message.from, 'Es muy fácil! Presta atención ☝🤓. Solo escribe "mp3", seguido del link del video. Por ejemplo: mp3 https://www.youtube.com/watch?v=dQw4w9WgXcQ');
         }
     });
-    client.on('message_create', message => {
-        // Normaliza el mensaje recibido para manejar variantes
-        const normalizedMessage = message.body.toLowerCase().trim();
-    
-        // Lista de posibles formas de pedir un chiste
-        const chisteRequests = ['cuéntame un chiste', 'cuentame un chiste'];
-    
-        // Verifica si el mensaje es una solicitud de chiste
-        if (chisteRequests.includes(normalizedMessage)) {
-            // Selecciona un chiste al azar de la lista
-            const chisteAleatorio = chistes[Math.floor(Math.random() * chistes.length)];
-    
-            // Envía el chiste como respuesta
-            client.sendMessage(message.from, chisteAleatorio);
-        }
-    });
+
     
 
     client.on('message', async (message) => {
