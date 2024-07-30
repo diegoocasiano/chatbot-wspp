@@ -8,7 +8,6 @@ const puppeteer = require('puppeteer-core');
 const app = express();
 const port = 3000;
 
-
 // Función principal asincrónica para inicializar el navegador
 async function initialize() {
     // Lanzar el navegador
@@ -47,19 +46,6 @@ async function initialize() {
     client.on('ready', () => {
         console.log('Client is ready!');
     });
-
-    // client.on('message_create', message => {
-    //     if (message.body === 'Hola', 'hola' , 'Hola!', 'hola!') {
-    //         client.sendMessage(message.from, 'Holaaa!😛. Soy un bot creado para descargar música de YouTube. Si no sabes cómo, solo escribe "tutorial". Pero no seas tan chismoso 🤫, si alguien te pregunta, solo cuento chistes (para que YouTube no se enoje y demande a mi creador 🥵). Eso es todo, disfrútalo! 🚀');
-    //     }
-    // });
-    // client.on('message_create', message => {
-    //     if (message.body === 'tutorial','Tutorial') {
-    //         client.sendMessage(message.from, 'Es muy fácil! Presta atención ☝🤓. Solo escribe "mp3", seguido del link del video. Por ejemplo: mp3 https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-    //     }
-    // });
-
-    
 
     client.on('message', async (message) => {
         let storedIdea = '';
