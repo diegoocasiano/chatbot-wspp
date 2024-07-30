@@ -101,7 +101,7 @@ async function initialize() {
             await client.sendMessage(message.from, 'Holaaa!😛. Soy un bot creado para descargar música de YouTube. Si no sabes cómo, solo escribe "tutorial". Pero no seas tan chismoso 🤫, si alguien te pregunta, solo cuento chistes (para que YouTube no se enoje y demande a mi creador 🥵). Eso es todo, disfrútalo! 🚀');
         }
         if (message.body == 'tutorial') {
-            await client.sendMessage(message.from, 'Es muy fácil, presta atención ☝🤓. Escribe "mp3" seguido del link del video. Por ejemplo: mp3 https://www.youtube.com/watch?v=BrCQa_gkQUI". Y listo!');
+            await client.sendMessage(message.from, 'Es muy fácil, presta atención ☝🤓. Escribe "mp3" seguido del link del video. Por ejemplo: mp3 https://www.youtube.com/watch?v=dQw4w9WgXcQ". Y listo!');
 
         }
     });
